@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Shop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        .shop-header {
+            background: linear-gradient(to bottom, #6b4833, #5c3824);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .shop-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, 
+                rgba(255,255,255,0.03) 25%, 
+                transparent 25%, 
+                transparent 50%, 
+                rgba(255,255,255,0.03) 50%, 
+                rgba(255,255,255,0.03) 75%, 
+                transparent 75%, 
+                transparent);
+            background-size: 20px 20px;
+            pointer-events: none;
+        }
+
+        .shop-brand {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .shop-logo {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: 4px solid #ffd700;
+            background: #000;
+            padding: 4px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            transition: all 0.5s ease;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .shop-logo::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 200%;
+            height: 100%;
+            background: linear-gradient(
+                to right,
+                transparent,
+                rgba(255, 255, 255, 0.2),
+                transparent
+            );
+            transform: rotate(45deg);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .shop-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            animation: pulse 3s ease-in-out infinite;
+            transition: transform 0.3s ease;
+        }
+
+        .shop-logo:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+        }
+
+        .shop-logo:hover img {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .shop-name {
+            color: white;
+            font-size: 36px;
+            font-weight: bold;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.4),
+                         0 0 30px rgba(255,215,0,0.1);
+            font-family: 'Arial Black', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        .refresh-icon {
+            width: 45px;
+            height: 45px;
+            margin-left: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0); }
+        }
+
+        .refresh-icon:hover {
+            transform: scale(1.15);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .shop-logo {
+                width: 75px;
+                height: 75px;
+            }
+            .refresh-icon {
+                width: 38px;
+                height: 38px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .shop-logo {
+                width: 65px;
+                height: 65px;
+            }
+            .refresh-icon {
+                width: 35px;
+                height: 35px;
+            }
+        }
+
+
+
+        body {
+            background: linear-gradient(135deg, #9B5D34 0%, #6b4833 100%);
+            position: relative;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.07) 0%, transparent 70%),
+                linear-gradient(rgba(0, 0, 0, 0.15) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.15) 2px, transparent 2px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+            backdrop-filter: blur(1px);
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.35;
+        }
+
+        .nav-container {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: #4CAF50;
+            width: 100%;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(0, 0, 0, 0.2) 1.5px, transparent 1.5px),
+                linear-gradient(90deg, rgba(0, 0, 0, 0.2) 1.5px, transparent 1.5px);
+            background-size: 40px 40px;
+            background-position: -1px -1px;
+            z-index: 1;
+        }
+
+        .hamburger-menu {
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 30px;
+            height: 25px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1001;
+        }
+
+        .hamburger-menu span {
+            width: 100%;
+            height: 3px;
+            background-color: white;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .hamburger-menu.active span:nth-child(1) {
+            transform: translateY(11px) rotate(45deg);
+        }
+
+        .hamburger-menu.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger-menu.active span:nth-child(3) {
+            transform: translateY(-11px) rotate(-45deg);
+        }
+
+        .nav-bar {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .nav-button i {
+            font-size: 20px;
+            margin-right: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .hamburger-menu {
+                display: flex;
+            }
+
+            .nav-bar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.95);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 20px;
+                transform: translateX(-100%);
+                opacity: 0;
+                pointer-events: none;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            .nav-bar.active {
+                transform: translateX(0);
+                opacity: 1;
+                pointer-events: auto;
+            }
+
+            .nav-button {
+                width: 80%;
+                max-width: 300px;
+                margin: 0;
+            }
+        }
+        
+        .nav-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .nav-bar {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            padding: 25px;
+            background: none;
+        }
+
+        .nav-button {
+            padding: 15px 40px;
+            border: 3px solid rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 6px 0 rgba(0, 0, 0, 0.4),
+                       0 6px 10px rgba(0, 0, 0, 0.2);
+            font-family: 'Arial Black', sans-serif;
+            position: relative;
+            color: white;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            min-width: 200px;
+            text-align: center;
+            z-index: 2;
+            isolation: isolate;
+        }
+
+        .nav-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .nav-button::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            right: -50%;
+            bottom: -50%;
+            background: linear-gradient(45deg, 
+                rgba(255,255,255,0) 20%, 
+                rgba(255,255,255,0.1) 50%,
+                rgba(255,255,255,0) 80%);
+            transform: rotate(45deg) translateY(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 0 rgba(0, 0, 0, 0.4),
+                       0 8px 20px rgba(0, 0, 0, 0.3);
+            filter: brightness(1.1);
+        }
+
+        .nav-button:hover::before {
+            opacity: 1;
+        }
+
+        .nav-button:hover::after {
+            transform: rotate(45deg) translateY(100%);
+        }
+
+        .nav-button:active {
+            transform: translateY(4px) scale(0.98);
+            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.4),
+                       0 2px 5px rgba(0, 0, 0, 0.2);
+            filter: brightness(0.95);
+        }
+
+        .home { 
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            backdrop-filter: none;
+        }
+        
+        .sheckles { 
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            backdrop-filter: none;
+        }
+        
+        .garden { 
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            backdrop-filter: none;
+        }
+
+
+
+        .stock-info {
+            position: absolute;
+            top: -6px;
+            left: -6px;
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3),
+                       inset 0 2px 3px rgba(255,255,255,0.2);
+            border: 1.5px solid rgba(255,255,255,0.8);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(4px);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .stock-info::before {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 8px;
+            height: 8px;
+            background: rgba(255,255,255,0.4);
+            border-radius: 50%;
+            filter: blur(1px);
+        }
+
+        .stock-info {
+            background: linear-gradient(135deg, #00C851, #007E33);
+            border-color: rgba(100,255,150,0.8);
+        }
+
+        .item-card:hover .stock-info {
+            transform: scale(1.15) translateY(2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3),
+                       inset 0 2px 3px rgba(255,255,255,0.3);
+        }
+
+        .shop-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 768px) {
+            .shop-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+                padding: 15px;
+            }
+
+            .item-card {
+                min-width: 0;
+            }
+
+            .filter-button {
+                padding: 8px 15px;
+                min-width: 120px;
+                font-size: 14px;
+            }
+
+            .filter-button i {
+                font-size: 16px;
+            }
+
+            .nav-button {
+                padding: 8px 20px;
+                font-size: 20px;
+            }
+
+            .shop-name {
+                font-size: 24px;
+            }
+
+            .rewards-button {
+                font-size: 14px;
+                padding: 8px 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .shop-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+                padding: 10px;
+            }
+
+            .item-image {
+                width: 100px;
+                height: 100px;
+            }
+
+            .item-name {
+                font-size: 14px;
+            }
+
+            .item-price {
+                font-size: 14px;
+            }
+
+            .stock-info {
+                width: 28px;
+                height: 28px;
+                font-size: 12px;
+            }
+
+            .rarity-badge {
+                font-size: 10px;
+                padding: 4px 8px;
+            }
+
+            .nav-bar {
+                gap: 10px;
+                padding: 15px;
+            }
+
+            .nav-button {
+                padding: 6px 15px;
+                font-size: 16px;
+            }
+
+            .rewards-button {
+                padding: 8px 15px;
+                font-size: 14px;
+            }
+        }
+
+        .rewards-button {
+            background: linear-gradient(135deg, #ffd700, #ffa500);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .rewards-button i {
+            font-size: 18px;
+        }
+
+        .rewards-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #ffed4a, #ffc107);
+        }
+
+        .rewards-button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .rewards-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background: linear-gradient(135deg, rgba(74, 74, 74, 0.95), rgba(54, 54, 54, 0.95));
+            border-radius: 15px;
+            padding: 30px;
+            z-index: 1001;
+            max-width: 90%;
+            width: 500px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: white;
+        }
+
+        .rewards-modal.active {
+            display: block;
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .rewards-title {
+            font-size: 24px;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #ffd700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .rewards-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .reward-tier {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .reward-tier:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .reward-amount {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        .reward-discount {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .rewards-note {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .item-card {
+            background: rgba(74, 74, 74, 0.25);
+            border-radius: 10px;
+            padding: 8px;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1),
+                       0 1px 3px rgba(0, 0, 0, 0.08);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transform: translateZ(0);
+            will-change: transform, box-shadow;
+            cursor: pointer;
+            width: 150px;
+            margin: 0 auto;
+        }
+
+        .item-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 10px;
+            padding: 1px;
+            background: linear-gradient(
+                135deg,
+                rgba(255, 255, 255, 0.3) 0%,
+                rgba(255, 255, 255, 0.1) 50%,
+                transparent 100%
+            );
+            -webkit-mask: linear-gradient(#fff 0 0) content-box,
+                         linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box,
+                  linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .item-card:hover {
+            transform: translateY(-8px) translateZ(0);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2),
+                       0 6px 10px rgba(0, 0, 0, 0.15),
+                       0 0 20px rgba(255, 215, 0, 0.1);
+            background: rgba(74, 74, 74, 0.35);
+        }
+
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-backdrop.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .item-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background: linear-gradient(135deg, rgba(74, 74, 74, 0.95), rgba(54, 54, 54, 0.95));
+            border-radius: 15px;
+            padding: 30px;
+            z-index: 1001;
+            max-width: 90%;
+            width: 500px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .item-modal.active {
+            display: block;
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        .item-card::after {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            background: linear-gradient(
+                135deg,
+                transparent 40%,
+                rgba(255, 255, 255, 0.1)
+            );
+            border-radius: 10px;
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .item-card:hover::after {
+            opacity: 1;
+        }
+
+        .rarity-badge {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 9px;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3),
+                       0 0 0 1px rgba(255, 255, 255, 0.15);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            backdrop-filter: blur(4px);
+            z-index: 10;
+            background-color: rgba(0, 0, 0, 0.85);
+            color: white;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .rarity-badge.prismatic {
+            background: linear-gradient(135deg, rgba(255, 105, 180, 0.9), rgba(217, 79, 162, 0.9));
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3),
+                       0 0 10px rgba(255, 105, 180, 0.5);
+        }
+
+        .rarity-badge.divine {
+            background: linear-gradient(135deg, rgba(230, 126, 34, 0.9), rgba(211, 84, 0, 0.9));
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3),
+                       0 0 10px rgba(230, 126, 34, 0.5);
+        }
+
+        .rarity-badge.mythical {
+            background: linear-gradient(135deg, rgba(155, 89, 182, 0.9), rgba(142, 68, 173, 0.9));
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3),
+                       0 0 10px rgba(155, 89, 182, 0.5);
+        }
+
+        .rarity-badge.rare {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.9), rgba(41, 128, 185, 0.9));
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3),
+                       0 0 10px rgba(52, 152, 219, 0.5);
+        }
+
+        .rarity-badge.legendary {
+            background: linear-gradient(135deg, rgba(241, 196, 15, 0.9), rgba(243, 156, 18, 0.9));
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3),
+                       0 0 10px rgba(241, 196, 15, 0.5);
+        }
+
+        .item-card:hover .rarity-badge {
+            transform: scale(1.05);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4),
+                       0 0 15px rgba(255, 255, 255, 0.2);
+        }
+
+        .item-image {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 6px;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(4px);
+        }
+
+        .item-card:hover .item-image {
+            border-color: rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            transform: scale(1.05);
+        }
+
+        .item-image img {
+            width: 95%;
+            height: 95%;
+            object-fit: contain;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .item-card:hover .item-image img {
+            animation: bounce 0.8s cubic-bezier(0.36, 0, 0.66, -0.56) infinite alternate;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        @keyframes bounce {
+            0% {
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                transform: translateY(-8px) scale(1.05);
+            }
+        }
+
+        .item-name {
+            color: white;
+            margin: 6px 0 4px;
+            font-weight: bold;
+            font-size: 12px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+            transition: transform 0.3s ease;
+            padding: 0 4px;
+        }
+
+        .item-card:hover .item-name {
+            transform: translateY(-2px);
+        }
+
+        .item-price {
+            color: #ffd700;
+            font-weight: bold;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            font-size: 18px;
+            padding: 5px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .item-price::before {
+            content: '★';
+            font-size: 0.9em;
+            display: inline-block;
+            animation: twinkle 1.5s ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+                text-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+            }
+            50% {
+                opacity: 0.7;
+                transform: scale(1.2) rotate(15deg);
+                text-shadow: 0 0 15px rgba(255, 215, 0, 0.8),
+                           0 0 30px rgba(255, 215, 0, 0.4);
+            }
+        }
+
+        /* Filter Styles */
+        .filter-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            padding: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-button {
+            padding: 8px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            font-size: 14px;
+            min-width: 120px;
+            text-transform: uppercase;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.2),
+                transparent
+            );
+            transition: 0.5s;
+        }
+
+        .filter-button:hover::before {
+            left: 100%;
+        }
+
+        .filter-button.active {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            border-color: rgba(255, 215, 0, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .filter-button.prismatic-filter {
+            border-color: rgba(255, 105, 180, 0.3);
+        }
+
+        .filter-button.divine-filter {
+            border-color: rgba(230, 126, 34, 0.3);
+        }
+
+        .filter-button.mythical-filter {
+            border-color: rgba(155, 89, 182, 0.3);
+        }
+
+        .filter-button.rare-filter {
+            border-color: rgba(52, 152, 219, 0.3);
+        }
+
+        .filter-button.legendary-filter {
+            border-color: rgba(241, 196, 15, 0.3);
+        }
+
+        .filter-button.active.prismatic-filter {
+            border-color: rgba(255, 105, 180, 0.8);
+            box-shadow: 0 0 15px rgba(255, 105, 180, 0.3);
+        }
+
+        .filter-button.active.divine-filter {
+            border-color: rgba(230, 126, 34, 0.8);
+            box-shadow: 0 0 15px rgba(230, 126, 34, 0.3);
+        }
+
+        .filter-button.active.mythical-filter {
+            border-color: rgba(155, 89, 182, 0.8);
+            box-shadow: 0 0 15px rgba(155, 89, 182, 0.3);
+        }
+
+        .filter-button.active.rare-filter {
+            border-color: rgba(52, 152, 219, 0.8);
+            box-shadow: 0 0 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .filter-button.active.legendary-filter {
+            border-color: rgba(241, 196, 15, 0.8);
+            box-shadow: 0 0 15px rgba(241, 196, 15, 0.3);
+        }
+
+        .item-card:hover .item-price {
+            transform: translateY(-2px);
+            color: #fff7cc;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .item-card:hover .item-price::before {
+            animation: twinkle 0.8s ease-in-out infinite;
+        }
+
+        .modal-content {
+            color: white;
+        }
+
+        .modal-item-image {
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 20px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .modal-item-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-item-details {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 10px;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            font-size: 15px;
+        }
+
+        .modal-item-details dt {
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .modal-item-details dd {
+            margin: 0;
+            color: white;
+            text-align: right;
+        }
+
+        .modal-item-description {
+            margin: 20px 0;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 15px;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .modal-rarity {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="green-bg nav-container">
+        <button class="hamburger-menu" aria-label="Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <nav class="nav-bar">
+            <button class="nav-button home">
+                <i class="fas fa-home"></i>
+                <span>HOME</span>
+            </button>
+            <button class="nav-button sheckles">
+                <i class="fas fa-coins"></i>
+                <span>SHECKLES</span>
+            </button>
+            <button class="nav-button garden">
+                <i class="fas fa-leaf"></i>
+                <span>GARDEN</span>
+            </button>
+        </nav>
+    </div>
+
+    <header class="shop-header">
+        <div class="shop-brand">
+            <div class="shop-logo">
+                <img src="images/rabbit.png" alt="Ryl Shop Logo">
+            </div>
+            <h1 class="shop-name">Ryl Shop</h1>
+            <img src="images/gcash.png" alt="GCash" class="refresh-icon">
+        </div>
+        <button class="rewards-button">
+            <i class="fas fa-gift"></i>
+            Rewards
+        </button>
+    </header>
+
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+
+
+    <!-- Rarity Filter Buttons -->
+    <div class="filter-container">
+        <button class="filter-button active" data-rarity="all">All</button>
+        <button class="filter-button prismatic-filter" data-rarity="prismatic">Prismatic</button>
+        <button class="filter-button divine-filter" data-rarity="divine">Divine</button>
+        <button class="filter-button mythical-filter" data-rarity="mythical">Mythical</button>
+        <button class="filter-button rare-filter" data-rarity="rare">Rare</button>
+        <button class="filter-button legendary-filter" data-rarity="legendary">Legendary</button>
+    </div>
+
+    <div class="shop-grid">
+        <!-- Item Cards -->
+        <div class="item-card">
+            <span class="stock-info" data-stock="high">Stock: 20</span>
+            <span class="rarity-badge prismatic">Prismatic</span>
+            <div class="item-image">
+                <img src="images/ckit.png" alt="Corrupted Kitsune">
+            </div>
+            <h3 class="item-name">Corrupted Kitsune</h3>
+            <p class="item-price">₱30</p>
+        </div>
+        <div class="item-card">
+            <span class="stock-info">Stock: 1</span>
+            <span class="rarity-badge divine">Divine</span>
+            <div class="item-image">
+                <img src="images/dff.png" alt="Dragonfly">
+            </div>
+            <h3 class="item-name">Dragonfly</h3>
+            <p class="item-price">₱150</p>
+        </div>
+        <div class="item-card">
+            <span class="stock-info">Stock: 1</span>
+            <span class="rarity-badge mythical">Mythical</span>
+            <div class="item-image">
+                <img src="images/bf.png" alt="Butterfly">
+            </div>
+            <h3 class="item-name">Butterfly</h3>
+            <p class="item-price">₱300</p>
+        </div>
+        <div class="item-card">
+            <span class="stock-info">Stock: 1</span>
+            <span class="rarity-badge mythical">Mythical</span>
+            <div class="item-image">
+                <img src="images/mim.png" alt="Mimic Octopus">
+            </div>
+            <h3 class="item-name">Mimic Octopus</h3>
+            <p class="item-price">₱200</p>
+        </div>
+        <div class="item-card">
+            <span class="stock-info">Stock: 1</span>
+            <span class="rarity-badge divine">Divine</span>
+            <div class="item-image">
+                <img src="images/trexx.png" alt="T-rex">
+            </div>
+            <h3 class="item-name">T-rex</h3>
+            <p class="item-price">₱100</p>
+        </div>
+        <div class="item-card">
+            <span class="stock-info">Stock: 10</span>
+            <span class="rarity-badge mythical">Mythical</span>
+            <div class="item-image">
+                <img src="images/dilo.png" alt="Dilophosaurus">
+            </div>
+            <h3 class="item-name">Dilophosaurus</h3>
+            <p class="item-price">₱25</p>
+        </div>
+        <div class="item-card">
+            <span class="stock-info">Stock: 2</span>
+            <span class="rarity-badge divine">Divine</span>
+            <div class="item-image">
+                <img src="images/ferret.png" alt="French Fry Ferret">
+            </div>
+            <h3 class="item-name">French Fry Ferret</h3>
+            <p class="item-price">₱250</p>
+        </div>
+        <div class="item-card">
+            <span class="stock-info">Stock: 1</span>
+            <span class="rarity-badge divine">Divine</span>
+            <div class="item-image">
+                <img src="images/rac.png" alt="Raccoon">
+            </div>
+            <h3 class="item-name">Raccoon</h3>
+            <p class="item-price">₱400</p>
+        </div>
+        <div class="item-card">
+            <span class="stock-info">Stock: 1</span>
+            <span class="rarity-badge mythical">Mythical</span>
+            <div class="item-image">
+                <img src="images/ck.png" alt="Chicken Zombie">
+            </div>
+            <h3 class="item-name">Chicken Zombie</h3>
+            <p class="item-price">₱100</p>
+        </div>
+        <div class="item-card">
+            <span class="stock-info">Stock: 1</span>
+            <span class="rarity-badge prismatic">Prismatic</span>
+            <div class="item-image">
+                <img src="images/rkit.png" alt="Kitsune">
+            </div>
+            <h3 class="item-name">Kitsune</h3>
+            <p class="item-price">₱900</p>
+        </div>
+        <div class="item-card">
+            <span class="stock-info">Stock: 1</span>
+            <span class="rarity-badge divine">Divine</span>
+            <div class="item-image">
+                <img src="images/dbee.png" alt="Disco Bee">
+            </div>
+            <h3 class="item-name">Disco Bee</h3>
+            <p class="item-price">₱450</p>
+        </div>
+        <div class="item-card">
+            <span class="stock-info">Stock: 1</span>
+            <span class="rarity-badge divine">Divine</span>
+            <div class="item-image">
+                <img src="images/qb.png" alt="Queen Bee">
+            </div>
+            <h3 class="item-name">Queen Bee</h3>
+            <p class="item-price">₱100</p>
+        </div>
+        <div class="item-card">
+            <span class="stock-info">Stock: 1</span>
+            <span class="rarity-badge divine">Divine</span>
+            <div class="item-image">
+                <img src="images/rf.png" alt="Red Fox">
+            </div>
+            <h3 class="item-name">Red Fox</h3>
+            <p class="item-price">₱50</p>
+        </div>
+        <div class="item-card">
+            <span class="stock-info">Stock: 1</span>
+            <span class="rarity-badge divine">Divine</span>
+            <div class="item-image">
+                <img src="images/spinoo.png" alt="Spinosaurus">
+            </div>
+            <h3 class="item-name">Spinosaurus</h3>
+            <p class="item-price">₱100</p>
+        </div>
+         <div class="item-card">
+            <span class="stock-info">Stock: 1</span>
+            <span class="rarity-badge divine">Divine</span>
+            <div class="item-image">
+                <img src="images/lobs.png" alt="Lobster Thermidor">
+            </div>
+            <h3 class="item-name">Lobster Thermidor</h3>
+            <p class="item-price">₱40</p>
+        </div>
+    </div>
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            // Create modal elements
+            const modalBackdrop = document.createElement('div');
+            modalBackdrop.className = 'modal-backdrop';
+            document.body.appendChild(modalBackdrop);
+            
+            const descriptions = {
+                prismatic: "A legendary creature of immense power, radiating with prismatic energy that shifts and changes like the aurora borealis.",
+                divine: "A divine being blessed by the gods themselves, possessing extraordinary abilities and a majestic presence.",
+                mythical: "A creature of myth and legend, rarely seen and possessing remarkable magical properties.",
+                rare: "An uncommon and valuable creature, sought after by collectors and adventurers alike.",
+                legendary: "A legendary beast whose tales have been passed down through generations."
+            };
+
+            // Initialize stock indicators
+            function setupStockIndicators() {
+                const indicators = document.querySelectorAll('.stock-info');
+                indicators.forEach(indicator => {
+                    indicator.setAttribute('data-stock', 'high');
+                });
+            }
+
+            // Run initialization
+            setupStockIndicators();
+            setupRarityFilters();
+            console.log('Page loaded');
+
+            // Rarity filter functionality
+            function setupRarityFilters() {
+                const filterButtons = document.querySelectorAll('.filter-button');
+                const itemCards = document.querySelectorAll('.item-card');
+
+                filterButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        // Remove active class from all buttons
+                        filterButtons.forEach(btn => btn.classList.remove('active'));
+                        // Add active class to clicked button
+                        button.classList.add('active');
+
+                        const selectedRarity = button.getAttribute('data-rarity');
+
+                        itemCards.forEach(card => {
+                            const cardRarity = card.querySelector('.rarity-badge').textContent.toLowerCase();
+                            
+                            if (selectedRarity === 'all' || cardRarity === selectedRarity.toLowerCase()) {
+                                card.style.display = 'block';
+                                // Add fade-in animation
+                                card.style.animation = 'fadeIn 0.5s ease forwards';
+                            } else {
+                                card.style.display = 'none';
+                            }
+                        });
+                    });
+                });
+            }
+
+            
+
+        // Close rewards modal when clicking outside
+        modalBackdrop.addEventListener('click', () => {
+            rewardsModal.classList.remove('active');
+            modalBackdrop.classList.remove('active');
+        });
+
+        // Function to set stock indicator
+        function updateStockIndicators() {
+            document.querySelectorAll('.stock-info').forEach(indicator => {
+                indicator.setAttribute('data-stock', 'high');
+            });
+        }
+
+        // Initialize stock indicators
+        updateStockIndicators();
+
+
+
+        // Hamburger menu functionality
+        const hamburger = document.querySelector('.hamburger-menu');
+        const navBar = document.querySelector('.nav-bar');
+        const navButtons = document.querySelectorAll('.nav-button');
+
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navBar.classList.toggle('active');
+            document.body.style.overflow = navBar.classList.contains('active') ? 'hidden' : '';
+        });
+
+        // Close menu when a nav button is clicked
+        navButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                navBar.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (navBar.classList.contains('active') &&
+                !navBar.contains(e.target) &&
+                !hamburger.contains(e.target)) {
+                hamburger.classList.remove('active');
+                navBar.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+
+        // Add animation keyframes
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .item-card {
+                transition: transform 0.3s ease;
+            }
+
+            .item-card:hover {
+                transform: translateY(-5px);
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Modal functionality
+        modalBackdrop.className = 'modal-backdrop';
+        document.body.appendChild(modalBackdrop);
+
+        const itemModal = document.createElement('div');
+        itemModal.className = 'item-modal';
+        itemModal.innerHTML = `
+            <button class="modal-close">×</button>
+            <div class="modal-content">
+                <div class="modal-item-image"></div>
+                <h2 class="modal-item-title"></h2>
+                <div class="modal-rarity"></div>
+                <dl class="modal-item-details">
+                    <dt>Stock</dt>
+                    <dd class="modal-stock"></dd>
+                    <dt>Price</dt>
+                    <dd class="modal-price"></dd>
+                    <dt>Release Date</dt>
+                    <dd>August 15, 2025</dd>
+                    <dt>Category</dt>
+                    <dd>Pets</dd>
+                </dl>
+                <p class="modal-item-description"></p>
+            </div>
+        `;
+        document.body.appendChild(itemModal);
+
+        // Add click handlers for items
+        document.querySelectorAll('.item-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const name = card.querySelector('.item-name').textContent;
+                const price = card.querySelector('.item-price').textContent;
+                const rarity = card.querySelector('.rarity-badge').textContent;
+                const rarityClass = card.querySelector('.rarity-badge').classList[1];
+                const stock = card.querySelector('.stock-info').textContent;
+                const imgSrc = card.querySelector('.item-image img').src;
+
+                // Get description based on rarity
+                const descriptions = {
+                    prismatic: "A legendary creature of immense power, radiating with prismatic energy that shifts and changes like the aurora borealis.",
+                    divine: "A divine being blessed by the gods themselves, possessing extraordinary abilities and a majestic presence.",
+                    mythical: "A creature of myth and legend, rarely seen and possessing remarkable magical properties.",
+                    rare: "An uncommon and valuable creature, sought after by collectors and adventurers alike.",
+                    legendary: "A legendary beast whose tales have been passed down through generations."
+                };
+
+                // Update modal content
+                itemModal.querySelector('.modal-item-image').innerHTML = `<img src="${imgSrc}" alt="${name}">`;
+                itemModal.querySelector('.modal-item-title').textContent = name;
+                itemModal.querySelector('.modal-rarity').textContent = rarity;
+                itemModal.querySelector('.modal-rarity').className = `modal-rarity ${rarityClass}`;
+                itemModal.querySelector('.modal-stock').textContent = stock;
+                itemModal.querySelector('.modal-price').textContent = price;
+                itemModal.querySelector('.modal-item-description').textContent = descriptions[rarityClass] || "A mysterious creature with unique abilities.";
+
+                // Show modal
+                modalBackdrop.classList.add('active');
+                itemModal.classList.add('active');
+            });
+        });
+
+        // Close modal on backdrop click
+        modalBackdrop.addEventListener('click', () => {
+            modalBackdrop.classList.remove('active');
+            itemModal.classList.remove('active');
+        });
+
+        // Close modal on close button click
+        itemModal.querySelector('.modal-close').addEventListener('click', (e) => {
+            e.stopPropagation();
+            modalBackdrop.classList.remove('active');
+            itemModal.classList.remove('active');
+        });
+
+        // Prevent modal close when clicking modal content
+        itemModal.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+            // Rewards Modal
+            const rewardsModal = document.createElement('div');
+            rewardsModal.className = 'rewards-modal';
+            rewardsModal.innerHTML = `
+                <button class="modal-close">×</button>
+                <h2 class="rewards-title">Rewards Program</h2>
+                <div class="rewards-list">
+                    <div class="reward-tier">
+                        <span class="reward-amount">₱1,500 Purchase</span>
+                        <span class="reward-discount">₱100 Discount</span>
+                    </div>
+                    <div class="reward-tier">
+                        <span class="reward-amount">₱3,000 Purchase</span>
+                        <span class="reward-discount">₱200 Discount</span>
+                    </div>
+                    <div class="reward-tier">
+                        <span class="reward-amount">₱6,000 Purchase</span>
+                        <span class="reward-discount">₱400 Discount</span>
+                    </div>
+                </div>
+                <p class="rewards-note">Discounts are automatically applied to your next purchase.</p>
+            `;
+            document.body.appendChild(rewardsModal);
+
+            // Add click handler for rewards button
+            const rewardsButton = document.querySelector('.rewards-button');
+            rewardsButton.addEventListener('click', () => {
+                modalBackdrop.classList.add('active');
+                rewardsModal.classList.add('active');
+            });
+
+            // Add close button functionality for rewards modal
+            const rewardsCloseButton = rewardsModal.querySelector('.modal-close');
+            rewardsCloseButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                modalBackdrop.classList.remove('active');
+                rewardsModal.classList.remove('active');
+            });
+
+            // Prevent closing when clicking inside rewards modal
+            rewardsModal.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        }); // Close DOMContentLoaded event listener
+    </script>
+</body>
+</html>
